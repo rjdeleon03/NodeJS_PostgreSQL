@@ -13,14 +13,23 @@ var patientsRouter = require('./routes/patients');
 var app = express();
 
 // database setup
-const config = {
-  user: "postgres",
-  password: "123",
-  database: "dengvaxia",
-  port: 5432
-}
-// var pool = pg.Pool(config);
-// app.set("dbPool", pool);
+const { Pool, Client } = require('pg');
+const client = new Client({
+    user: "postgres",
+    password: "123",
+    database: "dengvaxia",
+    port: 5432
+  })
+client.connect();
+client.query("CREATE TABLE IF NOT EXISTS patients (id BIGSERIAL NOT NULL, name varchar NOT NULL, age int NOT NULL, location VARCHAR NOT NULL);",
+function(err, result) {
+    if (err) {
+        console.log("not able to get connection "+ err);
+    } else {
+        console.log("Successfully created Patients table!");
+    }
+});
+app.set("dbClient", client);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
