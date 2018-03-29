@@ -1,24 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var pg = require("pg");
-
-const config = {
-  user: "postgres",
-  password: "123",
-  database: "dengvaxia",
-  port: 5432
-}
-
-var pool = pg.Pool(config);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/db', function (req, res, next) {
-  
-  pool.connect(function(err,client,done) {
+router.get('/db', function (req, res, next) {  
+
+  var dbPool = req.app.get("dbPool");
+  dbPool.connect(function(err,client,done) {
      if(err){
          console.log("not able to get connection "+ err);
          res.status(400).send(err);
@@ -38,7 +29,7 @@ router.get('/db', function (req, res, next) {
          }
      });
   });
-  pool.end();
+  dbPool.end();
 });
 
 module.exports = router;

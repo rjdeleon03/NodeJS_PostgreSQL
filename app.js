@@ -3,12 +3,24 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser');
+var pg = require("pg");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var patientsRouter = require('./routes/patients');
 
 var app = express();
+
+// database setup
+const config = {
+  user: "postgres",
+  password: "123",
+  database: "dengvaxia",
+  port: 5432
+}
+var pool = pg.Pool(config);
+app.set("dbPool", pool);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
