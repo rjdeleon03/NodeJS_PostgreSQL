@@ -1,43 +1,46 @@
 var express = require('express');
 var router = express.Router();
 
+const { Pool, Client } = require('pg');
+const client = new Client({
+    user: "postgres",
+    password: "123",
+    database: "dengvaxia",
+    port: 5432
+  })
+  client.connect()
+
 /* GET patients listing */
 router.get('/', function(req, res, next) {
-  res.render("patients/index");
+    client.query("SELECT * FROM patients", function(err, result) {
+        if (err) {
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } else {
+            res.render("patients/index", {patients: result.rows});
+        }
+    });
 });
 
 /* GET new patient form */
 router.get('/new', function(req, res, next) {
-  res.render("patients/new");
+    res.render("patients/new");
 });
 
 /* POST new patient */
 router.post('/', function(req, res, next) {
-    console.log(req.body);
+    client.query("INSERT INTO patients(name, age, location) VALUES($1, $2, $3)",
+                [req.body.name, req.body.age, req.body.location], 
+                function(err, result) {
 
-    var dbPool = req.app.get("dbPool");
-    dbPool.connect(function(err,client,done) {
-       if(err){
-           console.log("not able to get connection "+ err);
-           res.status(400).send(err);
-       } 
-       client.query("INSERT INTO patients(name, age, location) \
-                      VALUES($1, $2, $3)",
-                      [req.body.name, req.body.age, req.body.location], 
-                      function(err,result) {
-           done(); // closing the connection;
-           if(err){
-               console.log(err);
-               res.status(400).send(err);
-           }
-           if (result) {
-            res.status(200).send(result);
-           } else {
-             res.status(200).send("NO DB DATA FOUND!!!");
-           }
-       });
+        if (err) {
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } else {
+            console.log("Successfully added patient!");
+            res.redirect("/patients");
+        }
     });
-    dbPool.end();
 });
 
 module.exports = router;

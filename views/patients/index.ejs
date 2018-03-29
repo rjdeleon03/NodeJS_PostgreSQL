@@ -1,1 +1,18 @@
 <h1>Patients page</h1>
+
+<table>
+    <thead>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Location</th>
+    </thead>
+    <tbody>
+        <% patients.forEach(function(patient) { %>
+            <tr>
+                <td><%= patient.name %></td>
+                <td><%= patient.age %></td>
+                <td><%= patient.location %></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>

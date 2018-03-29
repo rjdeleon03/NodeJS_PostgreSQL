@@ -19,8 +19,8 @@ const config = {
   database: "dengvaxia",
   port: 5432
 }
-var pool = pg.Pool(config);
-app.set("dbPool", pool);
+// var pool = pg.Pool(config);
+// app.set("dbPool", pool);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
