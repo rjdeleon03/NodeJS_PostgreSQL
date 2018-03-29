@@ -5,9 +5,11 @@ var pg = require("pg");
 const config = {
   user: "postgres",
   password: "123",
-  database: "postgres",
+  database: "dengvaxia",
   port: 5432
 }
+
+var pool = pg.Pool(config);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,19 +17,25 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/db', function (req, res, next) {
-  var pool = pg.Pool(config);
+  
   pool.connect(function(err,client,done) {
      if(err){
          console.log("not able to get connection "+ err);
          res.status(400).send(err);
      } 
-     client.query('SELECT * FROM student where id = $1', [1],function(err,result) {
+     client.query("INSERT INTO patients(name, age, location) \
+                    VALUES('Clara', '4', 'Manila')", 
+                    function(err,result) {
          done(); // closing the connection;
          if(err){
              console.log(err);
              res.status(400).send(err);
          }
-         res.status(200).send(result.rows);
+         if (result) {
+          res.status(200).send(result);
+         } else {
+           res.status(200).send("NO DB DATA FOUND!!!");
+         }
      });
   });
   pool.end();
